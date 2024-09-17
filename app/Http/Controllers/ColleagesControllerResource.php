@@ -30,7 +30,7 @@ class ColleagesControllerResource extends Controller
      */
     public function index()
     {
-        $data=colleages::query()->with('government')->orderBy('id','DESC');
+        $data=colleages::query()->with('government')->with('years')->orderBy('id','DESC');
         $result=app(Pipeline::class)
             ->send($data)
             ->through([
@@ -51,14 +51,7 @@ class ColleagesControllerResource extends Controller
         $output=colleages::query()->updateOrCreate([
             'id'=>$data['id']??null
         ],$data);
-        foreach ($data['years_ids'] as $year){
-            colleages_years::query()->updateOrCreate([
-                'id'=>$year['id']??null
-            ],[
-                'colleage_id'=>$output->id,
-                'year_id'=>$year['year_id'],
-                ]);
-        }
+        $output->years()->sync($data['years_ids']);
         $output->load('government');
         DB::commit();
         return Messages::success(ColleagesResource::make($output,__('messages.saved_successfully')));

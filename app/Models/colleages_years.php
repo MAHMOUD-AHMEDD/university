@@ -11,4 +11,8 @@ class colleages_years extends Model
     protected $fillable=[
         'colleage_id','year_id'
     ];
+    public function year()
+    {
+        $this->belongsTo(years::class,'year_id');
+    }
 }

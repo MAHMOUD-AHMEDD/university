@@ -16,4 +16,10 @@ class colleages extends Model
         return $this->belongsTo(government::class,'government_id')
             ->withTrashed();
     }
+    public function years()
+    {
+        return $this->belongsToMany(years::class,colleages_years::class
+        ,'colleage_id','year_id')
+            ->withPivot('created_at','updated_at')->as('middle_table');
+    }
 }
