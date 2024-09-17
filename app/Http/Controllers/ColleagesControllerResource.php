@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ColleageFormRequest;
 use App\Http\Resources\ColleagesResource;
 use App\Models\colleages;
+use App\Models\colleages_years;
 use http\Message;
 use Illuminate\Http\Request;
 use App\Actions\HandleDataBeforeSaveAction;
@@ -19,6 +20,8 @@ use App\filters\StartDateFilter;
 use App\filters\EndDateFilter;
 use App\filters\SubjectIdFilter;
 use App\Http\Requests\GovernmentFormRequest;
+use Illuminate\Support\Facades\DB;
+
 //use App\filters\GovernmentIdFilter;
 class ColleagesControllerResource extends Controller
 {
@@ -43,10 +46,21 @@ class ColleagesControllerResource extends Controller
     }
     public function save($data)
     {
+        DB::beginTransaction();
+        $data['years_ids']=json_decode($data['years_ids'],true);
         $output=colleages::query()->updateOrCreate([
             'id'=>$data['id']??null
         ],$data);
+        foreach ($data['years_ids'] as $year){
+            colleages_years::query()->updateOrCreate([
+                'id'=>$year['id']??null
+            ],[
+                'colleage_id'=>$output->id,
+                'year_id'=>$year['year_id'],
+                ]);
+        }
         $output->load('government');
+        DB::commit();
         return Messages::success(ColleagesResource::make($output,__('messages.saved_successfully')));
     }
 
@@ -56,6 +70,7 @@ class ColleagesControllerResource extends Controller
     public function store(ColleageFormRequest $request)
     {
        $data=$request->validated();
+//       dd($data);
        $handle_data=HandleDataBeforeSaveAction::handle($data);
 //       dd($handle_data);
         return $this->save($handle_data);

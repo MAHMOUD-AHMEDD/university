@@ -24,6 +24,9 @@ class ColleageFormRequest extends FormRequest
     {
        $arr=[
            'government_id'=>'required|exists:governments,id',
+           'years_ids'=>'required|array',
+           'years_ids.*.id'=>'filled|exists:colleages_years,id',
+           'years_ids.*.year_id'=>'required|exists:years,id',
        ];
        $arr_lang=['name:required','info:nullable'];
        return HandleRulesValidation::handle($arr,$arr_lang);
