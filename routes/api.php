@@ -6,6 +6,8 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Resources\UserResource;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GovernmentControllerResource;
+use App\Http\Controllers\DeleteController;
+use App\Http\Controllers\ColleagesControllerResource;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,9 +30,11 @@ Route::group(['middleware'=>'changeLang'],function (){
 Route::group(['middleware'=>'changeLang'],function (){
     Route::post('/register',RegisterController::class);
     Route::post('/login',LoginController::class);
+    Route::resources([
+        'governments'=>GovernmentControllerResource::class,
+        'colleges'=>ColleagesControllerResource::class,
+    ]);
+    Route::post('/delete-item',DeleteController::class);
 });
 
-Route::resources([
-    'governments'=>GovernmentControllerResource::class
-]);
 

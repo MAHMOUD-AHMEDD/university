@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('colleages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('government_id')
+                ->constrained('governments')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->text('name');
+            $table->text('info')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
